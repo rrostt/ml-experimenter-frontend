@@ -1,0 +1,42 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import EditorTab from './editor-tab';
+import MachinesTab from './machines-tab';
+import SettingsView from './settings-view';
+import SettingsTab from './settings-tab';
+
+class DashBoard extends React.Component {
+  componentDidMount() {
+    $('.nav-tabs a', $(ReactDOM.findDOMNode(this))).click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+  }
+
+  render() {
+    return <div className='container-fluid app'>
+      <div className='row'>
+        <div className='col-xs-12'>
+          <ul className='nav nav-tabs'>
+            <li role='presentation' className='active'><a href='#code' role="tab" data-toggle="tab">Code</a></li>
+            <li role='presentation'><a href='#machines' role="tab" data-toggle="tab">Machines</a></li>
+            <li role='presentation'><a href='#graphs' role="tab" data-toggle="tab">Graphs</a></li>
+            <li role='presentation'><a href='#settings' role="tab" data-toggle="tab">Settings</a></li>
+          </ul>
+        </div>
+      </div>
+      <div className='tab-content'>
+        <EditorTab></EditorTab>
+        <MachinesTab></MachinesTab>
+        <div role="tabpanel" className="tab-pane" id="graphs">
+          <div className='row'>
+            <div className='col-xs-12'>graphs</div>
+          </div>
+        </div>
+        <SettingsTab></SettingsTab>
+      </div>
+    </div>;
+  }
+}
+
+module.exports = DashBoard;
