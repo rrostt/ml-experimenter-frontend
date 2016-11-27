@@ -54,7 +54,7 @@
   cursor: pointer;
 }
 
-.files-title, .machines-title {
+.files-title, .machines-title, .aws-instances-title {
   font-style: italic;
 }
 
@@ -70,6 +70,7 @@
 
 .aws-instances {
   overflow: scroll;
+  clear:both;
 }
 
 .aws-instance {
@@ -86,6 +87,11 @@
   border: 1px solid;
   margin-bottom: 16px;
   padding: 4px;
+  overflow: hidden;
+}
+
+.client-control .client-id {
+  white-space: nowrap;
 }
 
 .client-control.selected {
@@ -94,7 +100,12 @@
 }
 
 .client-control pre {
-  max-height: 40px;
+  height: 40px;
+  width: 50%;
+  display: inline-block;
+  font-size: 2px;
+  padding: 4px;
+  vertical-align: top;
 }
 
 .clear-stdout, .clear-stderr {

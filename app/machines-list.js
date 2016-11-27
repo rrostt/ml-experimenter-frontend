@@ -1,6 +1,7 @@
 import React from 'react';
 import MachineListItem from './machine-list-item';
 import socket from './socket';
+import machinesService from './services/machines';
 
 export default class MachinesList extends React.Component {
   constructor(props) {
@@ -20,6 +21,8 @@ export default class MachinesList extends React.Component {
     // });
 
     this.onMachines = (machines) => {
+      machinesService.set(machines);
+      console.log('machines', machines);
       this.setState({
         machines: machines,
       });

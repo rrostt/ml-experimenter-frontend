@@ -43,8 +43,10 @@ export default class MachineListItem extends React.Component {
         <div className="btn btn-link stop" onClick={() => this.stop()}><i className="ion-stop"></i></div>
       }
       { this.props.machine.syncStatus === 'error' ? 'error syncing' : '' }
-      <pre className="stdout">{this.props.machine.stdout}</pre>
-      <pre className="stderr">{this.props.machine.stderr}</pre>
+      <div>
+        <pre className="stdout">{this.props.machine.stdout}</pre>
+        <pre className="stderr">{this.props.machine.stderr}</pre>
+      </div>
     </div>;
   }
 }

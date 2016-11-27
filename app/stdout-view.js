@@ -7,6 +7,8 @@ export default class StdoutView extends React.Component {
   constructor(props) {
     super(props);
 
+    this.prevMachineId = this.props.machine.id;
+
     this.state = {
       stdout: this.props.machine.stdout,
     };
@@ -24,6 +26,16 @@ export default class StdoutView extends React.Component {
 
   componentWillUnmount() {
     socket.off('machine-state', this.onMachineState);
+  }
+
+  componentDidUpdate() {
+    if (this.props.machine.id != this.prevMachineId) {
+      this.setState({
+        stdout: this.props.machine.stdout,
+      });
+
+      this.prevMachineId = this.props.machine.id;
+    }
   }
 
   clear() {

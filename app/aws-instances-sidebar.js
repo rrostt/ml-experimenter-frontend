@@ -16,6 +16,7 @@ export default class AwsInstancesSidebar extends React.Component {
       instances: [],
       showSettings: false,
       awsError: undefined,
+      awsState: '',
     };
   }
 
@@ -26,6 +27,8 @@ export default class AwsInstancesSidebar extends React.Component {
       console.log('aws event', data);
       if (!data.instance && data.state == 'error') {
         this.setState({ awsError: data.errorReason });
+      } else if (!data.instance) {
+        this.setState({ awsState: data.state });
       }
     };
 
@@ -132,6 +135,7 @@ export default class AwsInstancesSidebar extends React.Component {
         </div>
       }
       {this.state.awsError}
+      {this.state.awsState}
       <button className='btn btn-link add-machine' onClick={() => this.launchInstance()}><i className="ion-plus"></i> launch instance</button>
     </div>
   }

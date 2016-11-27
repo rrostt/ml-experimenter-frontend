@@ -7,6 +7,8 @@ export default class StderrView extends React.Component {
   constructor(props) {
     super(props);
 
+    this.prevMachineId = this.props.machine.id;
+
     this.state = {
       stderr: this.props.machine.stderr,
     };
@@ -24,6 +26,16 @@ export default class StderrView extends React.Component {
 
   componentWillUnmount() {
     socket.off('machine-state', this.onMachineState);
+  }
+
+  componentDidUpdate() {
+    if (this.props.machine.id != this.prevMachineId) {
+      this.setState({
+        stderr: this.props.machine.stderr,
+      });
+
+      this.prevMachineId = this.props.machine.id;
+    }
   }
 
   clear() {
