@@ -11,4 +11,12 @@ export default {
     localStorage.settings = JSON.stringify(settings);
     return value;
   },
+
+  serialise: () => JSON.stringify(settings),
+  load: (settingsJSON) => {
+    try {
+      settings = JSON.parse(settingsJSON);
+      localStorage.settings = JSON.stringify(settings);
+    } catch (e) {}
+  },
 };

@@ -4,6 +4,7 @@ import EditorTab from './editor-tab';
 import MachinesTab from './machines-tab';
 import SettingsView from './settings-view';
 import SettingsTab from './settings-tab';
+import GraphTab from './graph-tab';
 
 class DashBoard extends React.Component {
   componentDidMount() {
@@ -11,6 +12,11 @@ class DashBoard extends React.Component {
       e.preventDefault();
       $(this).tab('show');
     });
+  }
+
+  logout() {
+    localStorage.removeItem('accessToken');
+    window.location.reload();
   }
 
   render() {
@@ -22,17 +28,14 @@ class DashBoard extends React.Component {
             <li role='presentation'><a href='#machines' role="tab" data-toggle="tab">Machines</a></li>
             <li role='presentation'><a href='#graphs' role="tab" data-toggle="tab">Graphs</a></li>
             <li role='presentation'><a href='#settings' role="tab" data-toggle="tab">Settings</a></li>
+            <li><a href='#' onClick={() => this.logout()}>Logout</a></li>
           </ul>
         </div>
       </div>
       <div className='tab-content'>
         <EditorTab></EditorTab>
         <MachinesTab></MachinesTab>
-        <div role="tabpanel" className="tab-pane" id="graphs">
-          <div className='row'>
-            <div className='col-xs-12'>graphs</div>
-          </div>
-        </div>
+        <GraphTab></GraphTab>
         <SettingsTab></SettingsTab>
       </div>
     </div>;

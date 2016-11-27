@@ -1,4 +1,10 @@
+import config from './config';
+
 function getParams(method, url, data) {
+  if (!url.startsWith(config.api)) {
+    url = config.api + url;
+  }
+
   var params = {
     method: method,
     url: url,
