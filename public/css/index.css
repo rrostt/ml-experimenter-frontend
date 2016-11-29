@@ -29,6 +29,11 @@
   flex-grow: 1;
   height: 100%;
 }
+.editor .projects-toolbar {
+  height: auto;
+  flex-grow: 0;
+}
+
 .editor .code-column {
   height: 100%;
   display: flex;
@@ -58,7 +63,7 @@
   font-style: italic;
 }
 
-.file-rename, .file-remove {
+.file-rename, .file-remove, .project-title-rename {
   font-size: 80%;
   margin-left:12px;
 }
@@ -120,4 +125,26 @@
   left: 0;
   top: 0;
   background: rgba(0,0,0,0.5);
+}
+
+.overlay {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+}
+
+.overlay > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50%;
+  margin-left: -50%;
+  width: 50%;
+  height: 50%;
+}
+
+.project-title {
+  display: inline-block;
+  margin: 5px;
 }

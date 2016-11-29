@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import FileItem from './fileItem';
 import CodeEditor from './code-editor';
 import MachinesList from './machines-list';
+import Modal from './modal';
 import config from './config';
 import http from './http';
 
@@ -18,11 +19,27 @@ class EditorTab extends React.Component {
         name: '',
         content: '',
       },
+
+      project: {
+        name: '',
+      },
+      projects: [],
+      showProjectsList: false,
     };
   }
 
   componentWillMount() {
     this.loadFiles();
+    this.loadCurrentProject();
+  }
+
+  loadCurrentProject() {
+    http.get('/projects/load/__current')
+    .then(project => {
+      this.setState({
+        project: project,
+      });
+    });
   }
 
   loadFiles() {
@@ -103,6 +120,23 @@ class EditorTab extends React.Component {
     });
   }
 
+  save(name, content) {
+    console.log('posting file');
+    http.post('/file',
+      {
+        name: name,
+        content: content,
+      }
+    ).then(() => {
+      // still the same file?
+      if (this.state.activeFile.name === name) {
+        this.setState({
+          activeFile: { name: name, content: content },
+        });
+      }
+    });
+  }
+
   addFile() {
     var name = prompt('filename');
 
@@ -125,8 +159,91 @@ class EditorTab extends React.Component {
     });
   }
 
+  listProject() {
+    http.get('/projects').then(projects => {
+      console.log(projects);
+
+      this.setState({
+        showProjectsList: true,
+        projects: projects,
+      });
+    });
+  }
+
+  newProject() {
+    http.get('/projects/new')
+      .then(projects => {
+        console.log(projects);
+
+        this.loadFiles();
+      });
+  }
+
+  loadProject(project) {
+    http.get('/projects/load/' + project.name)
+    .then(project => {
+      $('.modal', $(ReactDOM.findDOMNode(this))).modal('hide');
+      console.log(project);
+      this.loadFiles();
+      this.setState({
+        project: project,
+        showProjectsList: false,
+        activeFile: { name: undefined, content: undefined },
+      });
+    });
+  }
+
+  renameProject() {
+    var newName = prompt('Rename?', this.state.project.name);
+
+    if (!newName || newName === this.state.project.name) {
+      return;
+    }
+
+    http.post(
+      '/projects/rename/' + this.state.project.name,
+      {
+        newName: newName,
+      }
+    ).then((response) => {
+      if (response.error) return;
+
+      var project = Object.assign({}, this.state.project);
+      project.name = newName;
+      this.setState({
+        project: project,
+      });
+    });
+  }
+
+  componentDidUpdate() {
+    $('.modal', $(ReactDOM.findDOMNode(this))).modal({ backdrop: true });
+  }
+
   render() {
+    var filesListOverlay = <Modal title='Projects'>
+      <div className='list-group'>
+        {this.state.projects.map(
+          p => <a href='#' className='list-group-item' key={p.name} onClick={()=>this.loadProject(p)}>{p.name}</a>
+        )}
+      </div>
+    </Modal>;
+
     return <div role="tabpanel" className="tab-pane active editor" id="code">
+      <div className='row projects-toolbar'>
+        <div className='btn-toolbar' role='toolbar'>
+          <div className='btn-group btn-group-sm' role='group'>
+            <button className='btn btn-default' onClick={() => this.listProject()}>
+              Load project
+            </button>
+            <button className='btn btn-default' onClick={() => this.newProject()}>
+              New project
+            </button>
+            <span className='project-title'>{this.state.project.name}</span>
+            <span className='project-title-rename' onClick={() => this.renameProject()}>rename</span>
+          </div>
+        </div>
+      </div>
       <div className='row'>
         <div className='col-xs-2 files-column'>
           <div className='files-title'>Files column</div>
@@ -139,6 +256,7 @@ class EditorTab extends React.Component {
         </div>
         <div className='col-xs-8 code-column'>
           <CodeEditor file={this.state.activeFile}
+            onChange={(name, content) => this.save(name, content)}
             onRename={() => this.rename(this.state.activeFile)}
             onDelete={() => this.delete(this.state.activeFile)}
           />
@@ -148,6 +266,7 @@ class EditorTab extends React.Component {
           <MachinesList activeFilename={this.state.activeFile.name}/>
         </div>
       </div>
+      {this.state.showProjectsList ? filesListOverlay : null}
     </div>;
   }
 }

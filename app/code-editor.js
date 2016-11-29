@@ -5,7 +5,6 @@ import config from './config';
 
 class CodeEditor extends React.Component {
   componentDidUpdate() {
-    console.log('did update');
     if (!this.codemirror) {
       var $codeTextArea = $('.code', $(ReactDOM.findDOMNode(this)));
       if ($codeTextArea.length == 0) { return; }
@@ -22,18 +21,16 @@ class CodeEditor extends React.Component {
 
       this.codemirror.on('blur', () => {
         var input = this.codemirror.getValue();
-        var name = this.props.file.name; //$('.code').data('name');
+        var name = this.props.file.name;
 
         if (!name) { return; }
 
-        console.log('posting file');
-        http.post(config.api + '/file',
-          {
-            name: name,
-            content: input,
-          }
-        );
+        if (this.props.onChange) {
+          this.props.onChange(name, input);
+        }
       });
+    } else if ($('.code', $(ReactDOM.findDOMNode(this))).length === 0) {
+      this.codemirror = undefined;
     }
 
     if (this.props.file.name !== '') {
