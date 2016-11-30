@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 import FileItem from './fileItem';
 import CodeEditor from './code-editor';
 import MachinesList from './machines-list';
+
+import DropZone from 'react-dropzone';
+
 import Modal from './modal';
 import config from './config';
 import http from './http';
@@ -50,6 +53,11 @@ class EditorTab extends React.Component {
 
   fileClicked(file) {
     console.log('file clicked', file);
+
+    if (file.size > 2000000) {
+      alert('file too big for editor');
+      return;
+    }
 
     http.get(
       config.api + '/file',
@@ -175,6 +183,7 @@ class EditorTab extends React.Component {
       .then(projects => {
         console.log(projects);
 
+        this.loadProject();
         this.loadFiles();
       });
   }
@@ -220,7 +229,26 @@ class EditorTab extends React.Component {
     $('.modal', $(ReactDOM.findDOMNode(this))).modal({ backdrop: true });
   }
 
+  onDrop(files) {
+    console.log(files);
+
+    http.postFiles('/file/upload', files)
+    .then(response => {
+      console.log(response);
+      this.loadFiles();
+    }, err => console.log(err));
+  }
+
   render() {
+    var dropZoneStyle = {
+      width: '100%',
+      height: 100,
+      borderWidth: 2,
+      borderColor: '#666',
+      borderStyle: 'dashed',
+      borderRadius: 5,
+    };
+
     var filesListOverlay = <Modal title='Projects'>
       <div className='list-group'>
         {this.state.projects.map(
@@ -250,6 +278,9 @@ class EditorTab extends React.Component {
           <div className='files'>
             {this.state.files.map((file, i) => <FileItem key={i} file={file} onClick={() => this.fileClicked(file)}/>)}
           </div>
+          <DropZone style={dropZoneStyle} onDrop={(files) => this.onDrop(files)}>
+            Drop file or click to select file to upload.
+          </DropZone>
           <div className='files-controls'>
             <div onClick={() => this.addFile()} className='btn btn-link files-add'><i className='ion-plus'></i></div>
           </div>

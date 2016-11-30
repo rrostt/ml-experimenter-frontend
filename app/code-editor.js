@@ -33,7 +33,7 @@ class CodeEditor extends React.Component {
       this.codemirror = undefined;
     }
 
-    if (this.props.file.name !== '') {
+    if (this.props.file.name !== '' && !!this.codemirror) {
       this.codemirror.setValue(this.props.file.content);
     }
   }
