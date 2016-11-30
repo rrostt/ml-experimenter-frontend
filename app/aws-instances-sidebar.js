@@ -105,7 +105,7 @@ export default class AwsInstancesSidebar extends React.Component {
       return http.post(
         config.api + '/aws/launch',
         {
-          ami: 'ami-9c3b62ef', //'ami-68035c1b', //'ami-f6c89585', //'ami-2b86d458',
+          ami: 'ami-953d64e6',
           instanceType: 't2.micro',
         }
       );
