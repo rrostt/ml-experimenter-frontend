@@ -54,6 +54,17 @@
   flex-grow: 1;
 }
 
+.files {
+  overflow: auto;
+}
+
+.files:hover {
+    width: 50vw;
+    position: relative;
+    z-index: 1000;
+    background: #fff;
+}
+
 .file:hover {
   color: #0085ff;
   cursor: pointer;
@@ -61,6 +72,11 @@
 
 .files-title, .machines-title, .aws-instances-title {
   font-style: italic;
+}
+
+.file-title {
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .file-rename, .file-remove, .project-title-rename {
@@ -147,4 +163,8 @@
 .project-title {
   display: inline-block;
   margin: 5px;
+}
+
+.CodeMirror {
+  box-shadow: 0px 5px 13px rgba(0,0,0,0.5);
 }

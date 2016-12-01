@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import EditorTab from './editor-tab';
 import MachinesTab from './machines-tab';
-import SettingsView from './settings-view';
 import SettingsTab from './settings-tab';
 import GraphTab from './graph-tab';
 

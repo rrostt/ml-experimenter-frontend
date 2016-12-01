@@ -1,8 +1,7 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import AwsInstancesList from './aws-instances-list';
 
-import settings from './localSettings';
-import SettingsView from './settings-view';
 import config from './config';
 import http from './http';
 import socket from './socket';
@@ -14,7 +13,6 @@ export default class AwsInstancesSidebar extends React.Component {
     this.state = {
       hasCredentials: false,
       instances: [],
-      showSettings: false,
       awsError: undefined,
       awsState: '',
     };
@@ -40,26 +38,9 @@ export default class AwsInstancesSidebar extends React.Component {
   }
 
   fetchInstances() {
-    var key = settings.get('awsKey');
-    var secret = settings.get('awsSecret');
-    var region = settings.get('awsRegion');
-
-    if (!key || !secret) {
-      return;
-    }
-
-    http.post(
-      config.api + '/aws/credentials',
-      {
-        key: key,
-        secret: secret,
-        region: region,
-      }
-    ).then(() => {
-      return http.get(
-        config.api + '/aws/list'
-      )
-    }).then((instances) => {
+    http.get(
+      config.api + '/aws/list'
+    ).then((instances) => {
       console.log('instances', instances);
       if (instances.error) {
         this.setState({
@@ -74,46 +55,25 @@ export default class AwsInstancesSidebar extends React.Component {
     });
   }
 
-  openSettings() {
-    this.setState({ showSettings: true });
-  }
-
-  closeSettings() {
-    this.setState({ showSettings: false });
-  }
-
   refreshInstances() {
     this.componentWillMount();
   }
 
   launchInstance() {
-    var key = settings.get('awsKey');
-    var secret = settings.get('awsSecret');
-    var region = settings.get('awsRegion');
-
-    if (!key || !secret) {
-      return;
-    }
-
     http.post(
-      config.api + '/aws/credentials',
+      config.api + '/aws/launch',
       {
-        key: key,
-        secret: secret,
+        ami: 'ami-953d64e6',
+        instanceType: 't2.micro',
       }
-    ).then(() => {
-      return http.post(
-        config.api + '/aws/launch',
-        {
-          ami: 'ami-953d64e6',
-          instanceType: 't2.micro',
-        }
-      );
-    }).then((response) => {
+    ).then((response) => {
       console.log(response);
       this.refreshInstances();
     });;
+  }
 
+  onClickSettings(e) {
+    $('.nav-tabs a[href="#settings"]').tab('show');
   }
 
   render() {
@@ -130,8 +90,9 @@ export default class AwsInstancesSidebar extends React.Component {
         onChange={() => this.refreshInstances()} />
       : <div>No AWS credentials set.
 
-          <div className='btn btn-primary' onClick={()=>this.openSettings()}>Settings</div>
-          {this.state.showSettings?<SettingsView onClose={()=>this.closeSettings()}/>:null}
+          <a href='#settings' role="tab" data-toggle="tab" onClick={(e) => this.onClickSettings(e)}>
+            <div className='btn btn-primary'>Settings</div>
+          </a>
         </div>
       }
       {this.state.awsError}

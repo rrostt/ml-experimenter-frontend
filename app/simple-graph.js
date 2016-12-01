@@ -4,8 +4,6 @@ import { LineChart } from 'react-d3';
 
 export default class SimpleGraph extends React.Component {
   render() {
-    console.log(this.props.dataset);
-
     var lineData = this.props.dataset.series.map(serie => ({
       name: serie.name,
       values: serie.values.map(v => ({ x: +v[0], y: +v[1] })),

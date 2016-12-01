@@ -1,5 +1,4 @@
 import React from 'react';
-import settings from './localSettings';
 import http from './http';
 
 export default class SettingsTab extends React.Component {

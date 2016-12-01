@@ -13,7 +13,6 @@ export default class GraphTab extends React.Component {
 
   componentWillMount() {
     this.onDatasetChange = (data) => {
-      console.log('dataset change');
       var ds = this.state.datasets.slice();
       var i = ds.findIndex(ds => ds.name === data.name);
       if (i === -1) {

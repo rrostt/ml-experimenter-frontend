@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import FileItem from './fileItem';
 import CodeEditor from './code-editor';
 import MachinesList from './machines-list';
@@ -32,8 +31,19 @@ class EditorTab extends React.Component {
   }
 
   componentWillMount() {
-    this.loadFiles();
     this.loadCurrentProject();
+  }
+
+  startLoading() {
+    this.setState({
+      showLoadingModal: true,
+    });
+  }
+
+  stopLoading() {
+    this.setState({
+      showLoadingModal: false,
+    });
   }
 
   loadCurrentProject() {
@@ -42,6 +52,7 @@ class EditorTab extends React.Component {
       this.setState({
         project: project,
       });
+      this.loadFiles();
     });
   }
 
@@ -183,22 +194,27 @@ class EditorTab extends React.Component {
       .then(projects => {
         console.log(projects);
 
-        this.loadProject();
-        this.loadFiles();
+        this.loadCurrentProject();
       });
   }
 
   loadProject(project) {
+    this.setState({
+      showProjectsList: false,
+    });
+    this.startLoading();
+
     http.get('/projects/load/' + project.name)
     .then(project => {
-      $('.modal', $(ReactDOM.findDOMNode(this))).modal('hide');
       console.log(project);
       this.loadFiles();
       this.setState({
         project: project,
-        showProjectsList: false,
         activeFile: { name: undefined, content: undefined },
       });
+      this.stopLoading();
+    }, () => {
+      this.stopLoading();
     });
   }
 
@@ -225,8 +241,32 @@ class EditorTab extends React.Component {
     });
   }
 
-  componentDidUpdate() {
-    $('.modal', $(ReactDOM.findDOMNode(this))).modal({ backdrop: true });
+  cloneGit() {
+    var url = prompt('git url');
+
+    if (!url) return;
+
+    this.startLoading();
+    http.post(
+      '/projects/git-clone',
+      {
+        url: url,
+      }
+    ).then((response) => {
+      this.stopLoading();
+
+      if (response.error) {
+        console.log('error cloning git', response.error);
+        alert(response.error);
+        return;
+      }
+
+      this.loadCurrentProject();
+    }, (err) => {
+      this.stopLoading();
+      console.log('error cloning', err);
+      alert('network error');
+    });
   }
 
   onDrop(files) {
@@ -239,6 +279,12 @@ class EditorTab extends React.Component {
     }, err => console.log(err));
   }
 
+  modalClosed() {
+    this.setState({
+      showProjectsList: false,
+    });
+  }
+
   render() {
     var dropZoneStyle = {
       width: '100%',
@@ -249,7 +295,7 @@ class EditorTab extends React.Component {
       borderRadius: 5,
     };
 
-    var filesListOverlay = <Modal title='Projects'>
+    var filesListOverlay = <Modal title='Projects' onClose={() => this.modalClosed()}>
       <div className='list-group'>
         {this.state.projects.map(
           p => <a href='#' className='list-group-item' key={p.name} onClick={()=>this.loadProject(p)}>{p.name}</a>
@@ -266,6 +312,9 @@ class EditorTab extends React.Component {
             </button>
             <button className='btn btn-default' onClick={() => this.newProject()}>
               New project
+            </button>
+            <button className='btn btn-default' onClick={() => this.cloneGit()}>
+              Clone git
             </button>
             <span className='project-title'>{this.state.project.name}</span>
             <span className='project-title-rename' onClick={() => this.renameProject()}>rename</span>
@@ -298,6 +347,7 @@ class EditorTab extends React.Component {
         </div>
       </div>
       {this.state.showProjectsList ? filesListOverlay : null}
+      {this.state.showLoadingModal ? <Modal><h1>loading</h1></Modal> : null}
     </div>;
   }
 }
