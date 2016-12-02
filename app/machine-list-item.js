@@ -1,17 +1,30 @@
 import React from 'react';
 import config from './config';
+import socket from './socket';
 import http from './http';
 
 export default class MachineListItem extends React.Component {
-  sync() {
-    http.get(config.api + '/machines/' + this.props.machine.id + '/sync');
-  }
+  syncAndRun() {
+    this.onMachineStateSync = (state) => {
+      if (state.id !== this.props.machine.id) {
+        return;
+      }
 
-  run() {
-    http.get(
-      config.api + '/machines/' + this.props.machine.id + '/run',
-      { file: this.props.activeFilename }
-    );
+      if (state.syncStatus === 'success') {
+        http.get(
+          config.api + '/machines/' + this.props.machine.id + '/run',
+          { file: this.props.activeFilename }
+        );
+        socket.off('machine-state', this.onMachineStateSync);
+      } else if (state.syncStatus === 'error') {
+        socket.off('machine-state', this.onMachineStateSync);
+      }
+    };
+
+    http.get(config.api + '/machines/' + this.props.machine.id + '/sync')
+    .then(() => {
+      socket.on('machine-state', this.onMachineStateSync);
+    });
   }
 
   stop() {
@@ -28,19 +41,17 @@ export default class MachineListItem extends React.Component {
     var className = this.props.selected ? 'client-control selected' : 'client-control';
     return <div className={className} onClick={this.onClick.bind(this)}>
       <div className="client-id">{this.props.machine.id}</div>
-      { this.props.machine.syncStatus !== 'syncing' ?
-        <div className="btn btn-link sync" onClick={() => this.sync()}>
-          <i className="ion-code-download"></i>
+      { this.props.machine.syncStatus === 'syncing' ?
+        'syncing...'
+        :
+        this.props.machine.runStatus === 'idle' ?
+        <div className="btn btn-link run" onClick={() => this.syncAndRun()}>
+          <i className="ion-play"></i> go
         </div>
         :
-        <div className="btn btn-link sync">
-          <i className="ion-code-download"></i> syncing
+        <div className="btn btn-link stop" onClick={() => this.stop()}>
+          <i className="ion-stop"></i>
         </div>
-      }
-      { this.props.machine.runStatus == 'idle' ?
-        <div className="btn btn-link run" onClick={() => this.run()}><i className="ion-play"></i></div>
-        :
-        <div className="btn btn-link stop" onClick={() => this.stop()}><i className="ion-stop"></i></div>
       }
       { this.props.machine.syncStatus === 'error' ? 'error syncing' : '' }
       <div>

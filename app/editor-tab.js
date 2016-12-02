@@ -3,6 +3,8 @@ import FileItem from './fileItem';
 import CodeEditor from './code-editor';
 import MachinesList from './machines-list';
 
+import { DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
+
 import DropZone from 'react-dropzone';
 
 import Modal from './modal';
@@ -225,6 +227,11 @@ class EditorTab extends React.Component {
       return;
     }
 
+    if (!(/^[A-Za-z0-9_\.-]*$/.test(newName))) {
+      alert('invalid project name, must pass /^[A-Za-z0-9_.-]*$/');
+      return;
+    }
+
     http.post(
       '/projects/rename/' + this.state.project.name,
       {
@@ -304,23 +311,15 @@ class EditorTab extends React.Component {
     </Modal>;
 
     return <div role="tabpanel" className="tab-pane active editor" id="code">
-      <div className='row projects-toolbar'>
-        <div className='btn-toolbar' role='toolbar'>
-          <div className='btn-group btn-group-sm' role='group'>
-            <button className='btn btn-default' onClick={() => this.listProject()}>
-              Load project
-            </button>
-            <button className='btn btn-default' onClick={() => this.newProject()}>
-              New project
-            </button>
-            <button className='btn btn-default' onClick={() => this.cloneGit()}>
-              Clone git
-            </button>
-            <span className='project-title'>{this.state.project.name}</span>
-            <span className='project-title-rename' onClick={() => this.renameProject()}>rename</span>
-          </div>
-        </div>
-      </div>
+      <ButtonToolbar>
+        <DropdownButton bsStyle='link' title={this.state.project.name} id='projectdropdown'>
+          <MenuItem onClick={() => this.newProject()}>New Project</MenuItem>
+          <MenuItem onClick={() => this.listProject()}>Load Project</MenuItem>
+          <MenuItem onClick={() => this.cloneGit()}>Clone Git repo</MenuItem>
+          <MenuItem divider />
+          <MenuItem onClick={() => this.renameProject()}>Rename Project</MenuItem>
+        </DropdownButton>
+      </ButtonToolbar>
       <div className='row'>
         <div className='col-xs-2 files-column'>
           <div className='files-title'>Files column</div>

@@ -1,5 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+import { DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
+
 import http from './http';
 import config from './config';
 
@@ -57,11 +60,10 @@ class CodeEditor extends React.Component {
   render() {
     if (!!this.props.file.name && this.props.file.name != '') {
       return <div style={{ height: '100%', display: 'flex', flexDirection: 'column', }}>
-        <div className='file-title'>
-          {this.props.file.name}
-          <span className="file-rename" onClick={() => this.rename()}>rename</span>
-          <span className="file-remove" onClick={() => this.delete()}>delete</span>
-        </div>
+        <DropdownButton bsStyle='link' title={this.props.file.name} id='filedropdown'>
+          <MenuItem onClick={() => this.rename()}>Rename file</MenuItem>
+          <MenuItem onClick={() => this.delete()}>Delete file</MenuItem>
+        </DropdownButton>
         <textarea className='form-control code'></textarea>
       </div>;
     } else {

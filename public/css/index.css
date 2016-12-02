@@ -58,11 +58,8 @@
   overflow: auto;
 }
 
-.files:hover {
-    width: 50vw;
-    position: relative;
-    z-index: 1000;
-    background: #fff;
+.files .file {
+  font-size: 12px;
 }
 
 .file:hover {

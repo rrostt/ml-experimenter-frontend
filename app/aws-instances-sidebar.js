@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import AwsInstancesList from './aws-instances-list';
+import Modal from './modal';
 
 import config from './config';
 import http from './http';
@@ -15,6 +16,7 @@ export default class AwsInstancesSidebar extends React.Component {
       instances: [],
       awsError: undefined,
       awsState: '',
+      showLaunchModal: false,
     };
   }
 
@@ -59,17 +61,46 @@ export default class AwsInstancesSidebar extends React.Component {
     this.componentWillMount();
   }
 
-  launchInstance() {
+  onShowLaunchModalClose() {
+    this.setState({
+      showLaunchModal: false,
+    });
+  }
+
+  launchInstanceNow() {
+    var instanceType = this.refs.instanceType.value;
+
+    this.setState({
+      showLaunchModal: false,
+    });
+
     http.post(
       config.api + '/aws/launch',
       {
         ami: 'ami-953d64e6',
-        instanceType: 't2.micro',
+        instanceType: instanceType, // t2.micro
       }
     ).then((response) => {
       console.log(response);
       this.refreshInstances();
-    });;
+    });
+  }
+
+  launchInstance() {
+    this.setState({
+      showLaunchModal: true,
+    });
+
+    // http.post(
+    //   config.api + '/aws/launch',
+    //   {
+    //     ami: 'ami-953d64e6',
+    //     instanceType: 't2.micro',
+    //   }
+    // ).then((response) => {
+    //   console.log(response);
+    //   this.refreshInstances();
+    // });
   }
 
   onClickSettings(e) {
@@ -77,6 +108,12 @@ export default class AwsInstancesSidebar extends React.Component {
   }
 
   render() {
+    var instanceTypes = [
+      { name: 't2.micro', desc: '1gb, 1core' },
+      { name: 'c4.large', desc: '3.75gb, 2core' },
+      { name: 'p2.xlarge', desc: 'gpu' },
+    ];
+
     return <div>
       <div className='aws-instances-title'>
         <div className='aws-instances-refresh btn btn-link' onClick={()=>this.refreshInstances()}>
@@ -98,6 +135,23 @@ export default class AwsInstancesSidebar extends React.Component {
       {this.state.awsError}
       {this.state.awsState}
       <button className='btn btn-link add-machine' onClick={() => this.launchInstance()}><i className="ion-plus"></i> launch instance</button>
-    </div>
+
+      {
+        this.state.showLaunchModal ?
+        <Modal title='Launch AWS instance' onClose={() => this.onShowLaunchModalClose()}>
+          Instance type
+          <select className='form-control' ref='instanceType'>
+            {instanceTypes.map(
+              type => <option key={type.name} value={type.name}>{type.name} - {type.desc}</option>
+            )}
+          </select>
+          <div className='button-group'>
+            <button className='btn btn-primary' onClick={() => this.launchInstanceNow()}>Launch</button>
+          </div>
+        </Modal>
+        :
+        null
+      }
+    </div>;
   }
 }
