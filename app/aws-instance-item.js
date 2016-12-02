@@ -92,6 +92,9 @@ export default class AwsInstanceItem extends React.Component {
       <div className="instance-id" title={this.props.instance.ip}>
         {this.props.instance.instanceId}
       </div>
+      <div>
+        {this.props.instance.instanceType}
+      </div>
       {
         isMachine ?
         'machine up'

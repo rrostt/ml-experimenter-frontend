@@ -161,6 +161,8 @@ class EditorTab extends React.Component {
   addFile() {
     var name = prompt('filename');
 
+    if (!name) return;
+
     if (!validFilename(name)) {
       alert('not a valid filename');
       return;
@@ -311,17 +313,17 @@ class EditorTab extends React.Component {
     </Modal>;
 
     return <div role="tabpanel" className="tab-pane active editor" id="code">
-      <ButtonToolbar>
-        <DropdownButton bsStyle='link' title={this.state.project.name} id='projectdropdown'>
-          <MenuItem onClick={() => this.newProject()}>New Project</MenuItem>
-          <MenuItem onClick={() => this.listProject()}>Load Project</MenuItem>
-          <MenuItem onClick={() => this.cloneGit()}>Clone Git repo</MenuItem>
-          <MenuItem divider />
-          <MenuItem onClick={() => this.renameProject()}>Rename Project</MenuItem>
-        </DropdownButton>
-      </ButtonToolbar>
       <div className='row'>
         <div className='col-xs-2 files-column'>
+          <ButtonToolbar>
+            <DropdownButton bsStyle='link' title={this.state.project.name} id='projectdropdown'>
+              <MenuItem onClick={() => this.newProject()}>New Project</MenuItem>
+              <MenuItem onClick={() => this.listProject()}>Load Project</MenuItem>
+              <MenuItem onClick={() => this.cloneGit()}>Clone Git repo</MenuItem>
+              <MenuItem divider />
+              <MenuItem onClick={() => this.renameProject()}>Rename Project</MenuItem>
+            </DropdownButton>
+          </ButtonToolbar>
           <div className='files-title'>Files column</div>
           <div className='files'>
             {this.state.files.map((file, i) => <FileItem key={i} file={file} onClick={() => this.fileClicked(file)}/>)}

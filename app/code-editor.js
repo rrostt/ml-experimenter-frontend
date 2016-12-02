@@ -85,7 +85,7 @@ class CodeEditor extends React.Component {
         <textarea className='form-control code'></textarea>
       </div>;
     } else {
-      return <div>
+      return <div style={{ margin: '5px auto', padding: 10 }}>
         no file selected
       </div>;
     }

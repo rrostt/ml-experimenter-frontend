@@ -131,8 +131,8 @@ export default class AwsInstancesSidebar extends React.Component {
           </a>
         </div>
       }
-      {this.state.awsError}
-      {this.state.awsState}
+      <div>{this.state.awsError}</div>
+      <div>{this.state.awsState}</div>
       <button className='btn btn-link add-machine' onClick={() => this.launchInstance()}><i className="ion-plus"></i> launch instance</button>
 
       {

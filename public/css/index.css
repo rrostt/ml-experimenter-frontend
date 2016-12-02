@@ -50,6 +50,15 @@
   height: 100%;
 }
 
+.files-column .dropdown {
+  padding: 5px 0;
+}
+
+.files-column .dropdown > button {
+  max-width: 100%;
+  padding-left: 0;
+}
+
 .files-column .files, .machines-column .machines {
   flex-grow: 1;
 }
@@ -69,6 +78,10 @@
 
 .files-title, .machines-title, .aws-instances-title {
   font-style: italic;
+}
+
+.machines-title {
+  margin-top: 15px;
 }
 
 .file-title {
