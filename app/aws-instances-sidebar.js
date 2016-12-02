@@ -26,7 +26,11 @@ export default class AwsInstancesSidebar extends React.Component {
     this.onAWS = (data) => {
       console.log('aws event', data);
       if (!data.instance && data.state == 'error') {
-        this.setState({ awsError: data.errorReason });
+        if (data.details && data.details.message) {
+          this.setState({ awsError: data.details.message });
+        } else {
+          this.setState({ awsError: data.errorReason });
+        }
       } else if (!data.instance) {
         this.setState({ awsState: data.state });
       }
@@ -69,6 +73,7 @@ export default class AwsInstancesSidebar extends React.Component {
 
   launchInstanceNow() {
     var instanceType = this.refs.instanceType.value;
+    var ami = this.refs.ami.value;
 
     this.setState({
       showLaunchModal: false,
@@ -77,7 +82,7 @@ export default class AwsInstancesSidebar extends React.Component {
     http.post(
       config.api + '/aws/launch',
       {
-        ami: 'ami-953d64e6',
+        ami: ami, //'ami-953d64e6',
         instanceType: instanceType, // t2.micro
       }
     ).then((response) => {
@@ -90,17 +95,6 @@ export default class AwsInstancesSidebar extends React.Component {
     this.setState({
       showLaunchModal: true,
     });
-
-    // http.post(
-    //   config.api + '/aws/launch',
-    //   {
-    //     ami: 'ami-953d64e6',
-    //     instanceType: 't2.micro',
-    //   }
-    // ).then((response) => {
-    //   console.log(response);
-    //   this.refreshInstances();
-    // });
   }
 
   onClickSettings(e) {
@@ -112,6 +106,11 @@ export default class AwsInstancesSidebar extends React.Component {
       { name: 't2.micro', desc: '1gb, 1core' },
       { name: 'c4.large', desc: '3.75gb, 2core' },
       { name: 'p2.xlarge', desc: 'gpu' },
+    ];
+
+    var amis = [
+      { name: 'ml-experimenter worker', ami: 'ami-953d64e6' },
+      { name: 'ml-experimenter GPU worker', ami: 'ami-130a5260' },
     ];
 
     return <div>
@@ -139,12 +138,22 @@ export default class AwsInstancesSidebar extends React.Component {
       {
         this.state.showLaunchModal ?
         <Modal title='Launch AWS instance' onClose={() => this.onShowLaunchModalClose()}>
-          Instance type
-          <select className='form-control' ref='instanceType'>
-            {instanceTypes.map(
-              type => <option key={type.name} value={type.name}>{type.name} - {type.desc}</option>
-            )}
-          </select>
+          <div className='form-group'>
+            <label>AMI</label>
+            <select className='form-control' ref='ami'>
+              {amis.map(
+                type => <option key={type.name} value={type.ami}>{type.name}</option>
+              )}
+            </select>
+          </div>
+          <div className='form-group'>
+            <label>Instance type</label>
+            <select className='form-control' ref='instanceType'>
+              {instanceTypes.map(
+                type => <option key={type.name} value={type.name}>{type.name} - {type.desc}</option>
+              )}
+            </select>
+          </div>
           <div className='button-group'>
             <button className='btn btn-primary' onClick={() => this.launchInstanceNow()}>Launch</button>
           </div>

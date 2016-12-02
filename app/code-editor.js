@@ -12,7 +12,7 @@ class CodeEditor extends React.Component {
       var $codeTextArea = $('.code', $(ReactDOM.findDOMNode(this)));
       if ($codeTextArea.length == 0) { return; }
 
-      var width = $codeTextArea.width();
+      var width = $codeTextArea.parent().width();
       var height = $codeTextArea.height();
       this.codemirror = CodeMirror.fromTextArea($codeTextArea[0],
         {
@@ -58,12 +58,30 @@ class CodeEditor extends React.Component {
   }
 
   render() {
+    var containerStyle = {
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      border: '1px solid #ddd',
+      borderRadius: 3,
+    };
+
+    var headerStyle = {
+      padding: '5px 10px',
+      backgroundColor: '#f7f7f7',
+      borderBottom: '1px solid #d8d8d8',
+      borderTopLeftRadius: 2,
+      borderTopRightRadius: 2,
+    };
+
     if (!!this.props.file.name && this.props.file.name != '') {
-      return <div style={{ height: '100%', display: 'flex', flexDirection: 'column', }}>
-        <DropdownButton bsStyle='link' title={this.props.file.name} id='filedropdown'>
-          <MenuItem onClick={() => this.rename()}>Rename file</MenuItem>
-          <MenuItem onClick={() => this.delete()}>Delete file</MenuItem>
-        </DropdownButton>
+      return <div style={containerStyle}>
+        <div style={headerStyle}>
+          <DropdownButton bsStyle='link' title={this.props.file.name} id='filedropdown'>
+            <MenuItem onClick={() => this.rename()}>Rename file</MenuItem>
+            <MenuItem onClick={() => this.delete()}>Delete file</MenuItem>
+          </DropdownButton>
+        </div>
         <textarea className='form-control code'></textarea>
       </div>;
     } else {
