@@ -1,6 +1,7 @@
 import React from 'react';
 import MachineListItem from './machine-list-item';
 import socket from './socket';
+import http from './http';
 import machinesService from './services/machines';
 
 export default class MachinesList extends React.Component {
@@ -14,36 +15,11 @@ export default class MachinesList extends React.Component {
   }
 
   componentWillMount() {
-    // $.get(config.api + '/machines').then(machines => {
-    //   this.setState({
-    //     machines: machines,
-    //   });
-    // });
-
-    this.onMachines = (machines) => {
-      machinesService.set(machines);
-      console.log('machines', machines);
-      this.setState({
-        machines: machines,
-      });
-    };
-
-    socket.on('machines', this.onMachines);
-
-    this.onMachineState = state => {
-      var machine = this.state.machines.find(machine => machine.id === state.id);
-      if (machine) {
-        Object.assign(machine, state);
-        this.setState({ machines: this.state.machines.slice() });
-      }
-    };
-
-    socket.on('machine-state', this.onMachineState);
+    machinesService.registerComponent(this);
   }
 
   componentWillUnmount() {
-    socket.off('machines', this.onMachines);
-    socket.off('machine-state', this.onMachineState);
+    machinesService.unregisterComponent(this);
   }
 
   machineClicked(machine) {
@@ -51,8 +27,31 @@ export default class MachinesList extends React.Component {
       this.props.onSelected(machine);
     }
 
-    this.setState({
-      selectedMachine: machine,
+    // this.setState({
+    //   selectedMachine: machine,
+    // });
+    machinesService.setSelectedMachine(machine);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (this.state.selectedMachine !== nextState.selectedMachine && !!nextState.selectedMachine) {
+      if (this.props.onSelected) {
+        this.props.onSelected(nextState.selectedMachine);
+      }
+    }
+  }
+
+  onRename(machine, newName) {
+    machine.name = newName;
+    machinesService.setMachine(machine);
+
+    http.post(
+      '/machines/' + machine.id + '/rename',
+      {
+        newName: newName,
+      }
+    ).then((result) => {
+      console.log('renamed');
     });
   }
 
@@ -65,6 +64,7 @@ export default class MachinesList extends React.Component {
           onClick={() => this.machineClicked(machine)}
           machine={machine}
           activeFilename={this.props.activeFilename}
+          onRename={name => this.onRename(machine, name)}
         />
       )}
     </div>;

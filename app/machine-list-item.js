@@ -1,9 +1,21 @@
 import React from 'react';
+
+import { DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
+import Modal from './modal';
+
 import config from './config';
 import socket from './socket';
 import http from './http';
 
 export default class MachineListItem extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showConfig: false,
+    };
+  }
+
   syncAndRun() {
     this.onMachineStateSync = (state) => {
       if (state.id !== this.props.machine.id) {
@@ -31,6 +43,26 @@ export default class MachineListItem extends React.Component {
     http.get(config.api + '/machines/' + this.props.machine.id + '/stop');
   }
 
+  rename() {
+    var newName = prompt('Change name', this.props.machine.name || this.props.machine.id);
+
+    if (newName) {
+      this.props.onRename && this.props.onRename(newName);
+    }
+  }
+
+  showConfig() {
+    this.setState({
+      showConfig: true,
+    });
+  }
+
+  closeConfig() {
+    this.setState({
+      showConfig: false,
+    });
+  }
+
   onClick(e) {
     if (this.props.onClick) {
       this.props.onClick(e);
@@ -40,7 +72,11 @@ export default class MachineListItem extends React.Component {
   render() {
     var className = this.props.selected ? 'client-control selected' : 'client-control';
     return <div className={className} onClick={this.onClick.bind(this)}>
-      <div className="client-id">{this.props.machine.id}</div>
+      <DropdownButton style={{ float: 'right' }} className='close' bsStyle='link' noCaret title='...' id='machinedropdown'>
+        <MenuItem onClick={() => this.rename()}>Rename</MenuItem>
+        <MenuItem onClick={() => this.showConfig()}>Configuration</MenuItem>
+      </DropdownButton>
+      <div className="client-id">{this.props.machine.name || this.props.machine.id}</div>
       { this.props.machine.syncStatus === 'syncing' ?
         'syncing...'
         :
@@ -58,6 +94,16 @@ export default class MachineListItem extends React.Component {
         <pre className="stdout">{this.props.machine.stdout}</pre>
         <pre className="stderr">{this.props.machine.stderr}</pre>
       </div>
+
+      { this.state.showConfig ?
+        <Modal
+          title='Machine configuration'
+          onClose={() => this.closeConfig()}
+          >
+          hello
+        </Modal>
+      : null
+      }
     </div>;
   }
 }

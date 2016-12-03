@@ -294,6 +294,10 @@ class EditorTab extends React.Component {
     });
   }
 
+  onMachineSelected() {
+    $('.nav-tabs a[href="#machines"]').tab('show');
+  }
+
   render() {
     var dropZoneStyle = {
       width: '100%',
@@ -324,7 +328,7 @@ class EditorTab extends React.Component {
               <MenuItem onClick={() => this.renameProject()}>Rename Project</MenuItem>
             </DropdownButton>
           </ButtonToolbar>
-          <div className='files-title'>Files column</div>
+          <div className='files-title'>Files</div>
           <div className='files'>
             {this.state.files.map((file, i) => <FileItem key={i} file={file} onClick={() => this.fileClicked(file)}/>)}
           </div>
@@ -344,7 +348,9 @@ class EditorTab extends React.Component {
         </div>
         <div className='col-xs-2'>
           <div className='machines-title'>Machines</div>
-          <MachinesList activeFilename={this.state.activeFile.name}/>
+          <MachinesList
+            onSelected={(machine) => this.onMachineSelected(machine)}
+            activeFilename={this.state.activeFile.name}/>
         </div>
       </div>
       {this.state.showProjectsList ? filesListOverlay : null}

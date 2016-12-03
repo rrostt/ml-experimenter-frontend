@@ -115,14 +115,19 @@
 }
 
 .client-control {
-  border: 1px solid;
+  border: 1px solid #ddd;
   margin-bottom: 16px;
   padding: 4px;
-  overflow: hidden;
+}
+
+.client-control .dropdown {
+  float: right;
 }
 
 .client-control .client-id {
   white-space: nowrap;
+  overflow: hidden;
+  padding: 5px;
 }
 
 .client-control.selected {
