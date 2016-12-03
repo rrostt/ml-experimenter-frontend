@@ -67,26 +67,16 @@ export default class GraphTab extends React.Component {
     socket.off('dataset-changed', this.onDatasetChange);
   }
 
-  addData() {
-    var ds = Object.assign({}, this.state.sampleData);
-
-    ds.series[0].values.push([ds.series[0].values.length, Math.random() * 100]);
-    this.setState({
-      sampleData: ds,
-    });
-  }
-
   render() {
-    var sampleData = this.state.sampleData;
-
     return <div role="tabpanel" className="tab-pane" id="graphs">
       <div className='row'>
-        <div className='col-xs-12'>
-        graphs
-        <button onClick={() => this.addData()}>add</button>
-        <SimpleGraph dataset={sampleData} />
+        <div className='col-xs-12 graphs-content'>
         {
-          this.state.datasets.map(ds => <SimpleGraph key={ds.name} dataset={ds} />)
+          this.state.datasets.length > 0 ?
+            this.state.datasets.map(ds => <SimpleGraph key={ds.name} dataset={ds} />)
+          :
+            <p>Graphs of data inferred from stdout of running machines
+            will be shown here.</p>
         }
         </div>
       </div>
