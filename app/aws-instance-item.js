@@ -72,8 +72,10 @@ export default class AwsInstanceItem extends React.Component {
       m => m.awsInstanceId == this.props.instance.instanceId
     );
 
-    var classes = ['aws-instance'];
-    classes.push('state-' + this.props.instance.state.Name);
+    var classes = [
+      'aws-instance',
+      'state-' + this.props.instance.state.Name,
+    ];
     if (isMachine) {
       classes.push('has-machine');
     }
@@ -89,7 +91,7 @@ export default class AwsInstanceItem extends React.Component {
       <div className="instance-id" title={this.props.instance.ip}>
         {this.props.instance.instanceId}
       </div>
-      <div>
+      <div className='instance-type'>
         {this.props.instance.instanceType}
       </div>
       {
