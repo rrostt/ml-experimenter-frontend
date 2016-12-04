@@ -2,7 +2,7 @@ import React from 'react';
 import config from './config';
 import socket from './socket';
 import http from './http';
-import machines from './services/machines';
+import machinesService from './services/machines';
 
 export default class AwsInstanceItem extends React.Component {
   constructor(props) {
@@ -27,16 +27,13 @@ export default class AwsInstanceItem extends React.Component {
 
     socket.on('aws', this.onAWS);
 
-    this.onMachines = (data) => {
-      this.forceUpdate();
-    };
-
-    socket.on('machines', this.onMachines);
+    machinesService.registerComponent(this);
   }
 
   componentWillUnmount() {
     socket.off('aws', this.onAWS);
-    socket.off('machines', this.onMachines);
+
+    machinesService.unregisterComponent(this);
   }
 
   start() {
@@ -71,7 +68,7 @@ export default class AwsInstanceItem extends React.Component {
   }
 
   render() {
-    var isMachine = machines.get().some(
+    var isMachine = this.state.machines.some(
       m => m.awsInstanceId == this.props.instance.instanceId
     );
 
