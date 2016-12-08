@@ -64,6 +64,7 @@ class CodeEditor extends React.Component {
       flexDirection: 'column',
       border: '1px solid #ddd',
       borderRadius: 3,
+      marginTop: 5,
     };
 
     var headerStyle = {

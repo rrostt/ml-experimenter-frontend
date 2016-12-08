@@ -16,7 +16,10 @@ export default class MachineListItem extends React.Component {
     };
   }
 
-  syncAndRun() {
+  syncAndRun(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
     this.onMachineStateSync = (state) => {
       if (state.id !== this.props.machine.id) {
         return;
@@ -40,6 +43,9 @@ export default class MachineListItem extends React.Component {
   }
 
   stop() {
+    e.preventDefault();
+    e.stopPropagation();
+
     http.get(config.api + '/machines/' + this.props.machine.id + '/stop');
   }
 
@@ -81,7 +87,7 @@ export default class MachineListItem extends React.Component {
         'syncing...'
         :
         this.props.machine.runStatus === 'idle' ?
-        <div className="btn btn-link run" onClick={() => this.syncAndRun()}>
+        <div className="btn btn-link run" onClick={(e) => this.syncAndRun(e)}>
           <i className="ion-play"></i> go
         </div>
         :

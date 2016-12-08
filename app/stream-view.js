@@ -32,7 +32,7 @@ export default class StreamView extends React.Component {
 
     return <div style={containerStyle}>
       <div style={headerStyle}>
-        stdout <span className='clear' onClick={() => this.onClear()}>clear</span>
+        {this.props.title} <span className='clear' onClick={() => this.onClear()}>clear</span>
       </div>
       <pre style={preStyle}>{this.props.content}</pre>
     </div>;

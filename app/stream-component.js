@@ -47,6 +47,6 @@ export default class StreamComponent extends React.Component {
   }
 
   render() {
-    return <StreamView content={this.state.content} onClear={() => this.clear()} />;
+    return <StreamView title={this.attrName} content={this.state.content} onClear={() => this.clear()} />;
   }
 }
