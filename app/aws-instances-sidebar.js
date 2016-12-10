@@ -109,7 +109,7 @@ export default class AwsInstancesSidebar extends React.Component {
     ];
 
     var amis = [
-      { name: 'ml-experimenter worker', ami: 'ami-953d64e6' },
+      { name: 'ml-experimenter worker', ami: 'ami-a993b6da', }, //'ami-953d64e6' },
       { name: 'ml-experimenter GPU worker', ami: 'ami-5c025a2f' },
     ];
 
