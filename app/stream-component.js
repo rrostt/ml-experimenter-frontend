@@ -29,7 +29,7 @@ export default class StreamComponent extends React.Component {
   }
 
   componentWillUnmount() {
-    socket.off('machine-state', this.onMachineState);
+    socket.removeListener('machine-state', this.onMachineState);
   }
 
   componentDidUpdate() {

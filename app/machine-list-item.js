@@ -26,13 +26,13 @@ export default class MachineListItem extends React.Component {
       }
 
       if (state.syncStatus === 'success') {
+        socket.removeListener('machine-state', this.onMachineStateSync);
         http.get(
           config.api + '/machines/' + this.props.machine.id + '/run',
           { file: this.props.activeFilename }
         );
-        socket.off('machine-state', this.onMachineStateSync);
       } else if (state.syncStatus === 'error') {
-        socket.off('machine-state', this.onMachineStateSync);
+        socket.removeListener('machine-state', this.onMachineStateSync);
       }
     };
 
@@ -42,7 +42,7 @@ export default class MachineListItem extends React.Component {
     });
   }
 
-  stop() {
+  stop(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -91,7 +91,7 @@ export default class MachineListItem extends React.Component {
           <i className="ion-play"></i> go
         </div>
         :
-        <div className="btn btn-link stop" onClick={() => this.stop()}>
+        <div className="btn btn-link stop" onClick={(e) => this.stop(e)}>
           <i className="ion-stop"></i>
         </div>
       }

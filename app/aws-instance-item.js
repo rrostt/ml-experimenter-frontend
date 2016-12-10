@@ -31,7 +31,7 @@ export default class AwsInstanceItem extends React.Component {
   }
 
   componentWillUnmount() {
-    socket.off('aws', this.onAWS);
+    socket.removeListener('aws', this.onAWS);
 
     machinesService.unregisterComponent(this);
   }

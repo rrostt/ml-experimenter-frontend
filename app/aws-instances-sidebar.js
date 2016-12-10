@@ -40,7 +40,7 @@ export default class AwsInstancesSidebar extends React.Component {
   }
 
   componentWillUnmount() {
-    socket.off('aws', this.onAWS);
+    socket.removeListener('aws', this.onAWS);
   }
 
   fetchInstances() {

@@ -42,8 +42,8 @@ class Machines extends SharedResource {
   }
 
   deinit() {
-    socket.off('machines', this.onMachines);
-    socket.off('machine-state', this.onMachineState);
+    socket.removeListener('machines', this.onMachines);
+    socket.removeListener('machine-state', this.onMachineState);
   }
 
   setMachine(machine) {

@@ -18,6 +18,10 @@ class SharedResource {
     if (i !== -1) {
       this.components.splice(i, 1);
     }
+
+    if (this.components.length === 0) {
+      this.deinit();
+    }
   }
 
   setStates() {
