@@ -1,11 +1,9 @@
 import React from 'react';
-import FileItem from './fileItem';
 import CodeEditor from './code-editor';
 import MachinesList from './machines-list';
+import FilesColumn from './tabs/editor/files-column';
 
 import { DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
-
-import DropZone from 'react-dropzone';
 
 import Modal from './modal';
 import config from './config';
@@ -240,12 +238,28 @@ class EditorTab extends React.Component {
         newName: newName,
       }
     ).then((response) => {
-      if (response.error) return;
+      if (response.error) {
+        alert(response.error);
+        return;
+      }
 
       var project = Object.assign({}, this.state.project);
       project.name = newName;
       this.setState({
         project: project,
+      });
+    });
+  }
+
+  deleteProject() {
+    http.post(
+      '/projects/delete/' + this.state.project.name,
+      {}
+    ).then((response) => {
+      if (response.error) return;
+
+      this.setState({
+        project: null,
       });
     });
   }
@@ -299,15 +313,6 @@ class EditorTab extends React.Component {
   }
 
   render() {
-    var dropZoneStyle = {
-      width: '100%',
-      height: 100,
-      borderWidth: 2,
-      borderColor: '#666',
-      borderStyle: 'dashed',
-      borderRadius: 5,
-    };
-
     var filesListOverlay = <Modal title='Projects' onClose={() => this.modalClosed()}>
       <div className='list-group'>
         {this.state.projects.map(
@@ -316,35 +321,39 @@ class EditorTab extends React.Component {
       </div>
     </Modal>;
 
+    var projectTitle = (this.state.project && this.state.project.name) || 'Project';
+
     return <div role="tabpanel" className="tab-pane active editor" id="code">
       <div className='row'>
         <div className='col-xs-2 files-column'>
           <ButtonToolbar>
-            <DropdownButton bsStyle='link' title={this.state.project.name} id='projectdropdown'>
+            <DropdownButton bsStyle='link' title={projectTitle} id='projectdropdown'>
               <MenuItem onClick={() => this.newProject()}>New Project</MenuItem>
               <MenuItem onClick={() => this.listProject()}>Load Project</MenuItem>
               <MenuItem onClick={() => this.cloneGit()}>Clone Git repo</MenuItem>
-              <MenuItem divider />
-              <MenuItem onClick={() => this.renameProject()}>Rename Project</MenuItem>
+              { this.state.project ? <MenuItem divider /> : null }
+              { this.state.project ? <MenuItem onClick={() => this.renameProject()}>Rename Project</MenuItem> : null }
+              { this.state.project ? <MenuItem onClick={() => this.deleteProject()}>Delete Project</MenuItem> : null }
             </DropdownButton>
           </ButtonToolbar>
-          <div className='files-title'>Files</div>
-          <div className='files'>
-            {this.state.files.map((file, i) => <FileItem key={i} file={file} onClick={() => this.fileClicked(file)}/>)}
-          </div>
-          <DropZone style={dropZoneStyle} onDrop={(files) => this.onDrop(files)}>
-            Drop file or click to select file to upload.
-          </DropZone>
-          <div className='files-controls'>
-            <div onClick={() => this.addFile()} className='btn btn-link files-add'><i className='ion-plus'></i></div>
-          </div>
+          { this.state.project ?
+            <FilesColumn
+              files={this.state.files}
+              fileClicked={(file) => this.fileClicked(file)}
+              addFile={() => this.addFile()}
+              onDrop={(files) => this.onDrop(files)}
+              />
+            : null
+          }
         </div>
         <div className='col-xs-8 code-column'>
-          <CodeEditor file={this.state.activeFile}
-            onChange={(name, content) => this.save(name, content)}
-            onRename={() => this.rename(this.state.activeFile)}
-            onDelete={() => this.delete(this.state.activeFile)}
-          />
+          { this.state.project ?
+            <CodeEditor file={this.state.activeFile}
+              onChange={(name, content) => this.save(name, content)}
+              onRename={() => this.rename(this.state.activeFile)}
+              onDelete={() => this.delete(this.state.activeFile)}
+            />
+          : null }
         </div>
         <div className='col-xs-2'>
           <div className='machines-title'>Machines</div>
