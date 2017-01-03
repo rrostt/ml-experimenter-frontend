@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DataXYChart from './data-xy-chart';
+
+import { DataXYChart } from 'react-data-charts';
 
 export default class SimpleGraph extends React.Component {
   constructor(props) {
@@ -12,8 +13,6 @@ export default class SimpleGraph extends React.Component {
   }
 
   componentDidMount() {
-    console.log('mount', ReactDOM.findDOMNode(this).offsetWidth);
-
     this.onResize = () => {
       this.checkSize();
     };
