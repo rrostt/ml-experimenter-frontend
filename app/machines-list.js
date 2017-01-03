@@ -55,6 +55,25 @@ export default class MachinesList extends React.Component {
     });
   }
 
+  connect() {
+    var host = prompt('hostname');
+
+    if (!host) return;
+
+    http.post(
+      '/machines/connect',
+      {
+        host: host,
+      }
+    ).then(() => {
+      console.log('connect sent');
+    },
+
+    err => {
+      console.log('error', err);
+    });
+  }
+
   render() {
     return <div className='machines'>
       {this.state.machines.map(

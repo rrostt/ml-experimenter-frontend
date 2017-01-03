@@ -57,6 +57,10 @@ export default class AwsInstancesSidebar extends React.Component {
           instances: instances,
           hasCredentials: true,
         });
+
+        if (instances.some(instance => instance.state.Name === 'pending')) {
+          setTimeout(() => this.fetchInstances(), 1000);
+        }
       }
     });
   }
@@ -109,11 +113,16 @@ export default class AwsInstancesSidebar extends React.Component {
     ];
 
     var amis = [
-      { name: 'ml-experimenter worker', ami: 'ami-a993b6da', }, //'ami-953d64e6' },
+      { name: 'ml-experimenter worker', ami: 'ami-7f5a760c', },
       { name: 'ml-experimenter GPU worker', ami: 'ami-5c025a2f' },
     ];
 
-    return <div>
+    var containerStyle = {
+      display: 'flex',
+      flexDirection: 'column',
+    };
+
+    return <div style={ containerStyle }>
       <div className='aws-instances-title'>
         <div className='aws-instances-refresh btn btn-link' onClick={()=>this.refreshInstances()}>
           <i className='ion-refresh'></i>
